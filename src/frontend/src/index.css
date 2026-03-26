@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    /* Canvas / page background: #EEF2F7 */
+    --background: 0.958 0.012 237;
+    /* Card / white: #FFFFFF */
+    --card: 1 0 0;
+    --card-foreground: 0.18 0.018 264;
+    /* Popover */
+    --popover: 1 0 0;
+    --popover-foreground: 0.18 0.018 264;
+    /* Near-black text: #111827 */
+    --foreground: 0.18 0.018 264;
+    /* Primary CTA: purple-violet ~#6D5EF8 */
+    --primary: 0.55 0.22 270;
+    --primary-foreground: 1 0 0;
+    /* Secondary: dark slate #111827 */
+    --secondary: 0.18 0.018 264;
+    --secondary-foreground: 1 0 0;
+    /* Muted: light gray */
+    --muted: 0.96 0.008 240;
+    --muted-foreground: 0.5 0.018 264;
+    /* Accent: pale periwinkle #EEF2FF */
+    --accent: 0.95 0.04 270;
+    --accent-foreground: 0.45 0.22 270;
+    /* Destructive */
+    --destructive: 0.577 0.245 27.325;
+    --destructive-foreground: 1 0 0;
+    /* Border */
+    --border: 0.92 0.01 237;
+    --input: 0.92 0.01 237;
+    --ring: 0.55 0.22 270;
+    /* Charts */
+    --chart-1: 0.55 0.22 270;
+    --chart-2: 0.6 0.14 162;
+    --chart-3: 0.7 0.18 40;
+    --chart-4: 0.65 0.2 142;
+    --chart-5: 0.6 0.24 22;
+    /* Sidebar */
+    --sidebar: 1 0 0;
+    --sidebar-foreground: 0.18 0.018 264;
+    --sidebar-primary: 0.55 0.22 270;
+    --sidebar-primary-foreground: 1 0 0;
+    --sidebar-accent: 0.95 0.04 270;
+    --sidebar-accent-foreground: 0.45 0.22 270;
+    --sidebar-border: 0.92 0.01 237;
+    --sidebar-ring: 0.55 0.22 270;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.22 270),
+      oklch(0.48 0.24 290)
+    );
+  }
+  .gradient-hero {
+    background: linear-gradient(
+      135deg,
+      oklch(0.94 0.05 270) 0%,
+      oklch(0.95 0.04 225) 50%,
+      oklch(0.96 0.03 240) 100%
+    );
+  }
+  .text-gradient-primary {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.22 270),
+      oklch(0.48 0.24 290)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
