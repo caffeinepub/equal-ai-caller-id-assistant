@@ -1,6 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   AlertTriangle,
@@ -28,13 +35,32 @@ import {
   useSearchNumber,
 } from "../hooks/useQueries";
 
+type CountryCode = "US" | "IN";
+
+const COUNTRY_OPTIONS: Record<
+  CountryCode,
+  { flag: string; code: string; placeholder: string; label: string }
+> = {
+  US: {
+    flag: "🇺🇸",
+    code: "+1",
+    placeholder: "(555) 000-0000",
+    label: "United States",
+  },
+  IN: { flag: "🇮🇳", code: "+91", placeholder: "98765 43210", label: "India" },
+};
+
 interface LookupPageProps {
   onNavigate: (view: View, number?: string) => void;
   initialNumber?: string;
 }
 
-function formatPhoneNumber(value: string) {
+function formatPhoneNumber(value: string, country: CountryCode = "US") {
   const digits = value.replace(/\D/g, "").slice(0, 10);
+  if (country === "IN") {
+    if (digits.length <= 5) return digits;
+    return `${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
   if (digits.length <= 3) return digits;
   if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
   return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
@@ -73,6 +99,7 @@ export default function LookupPage({
   onNavigate,
   initialNumber = "",
 }: LookupPageProps) {
+  const [country, setCountry] = useState<CountryCode>("IN");
   const [rawInput, setRawInput] = useState(initialNumber);
   const [searchTrigger, setSearchTrigger] = useState(initialNumber.length > 0);
   const [noteText, setNoteText] = useState("");
@@ -89,13 +116,19 @@ export default function LookupPage({
 
   useEffect(() => {
     if (initialNumber) {
-      setRawInput(formatPhoneNumber(initialNumber.replace(/\D/g, "")));
+      setRawInput(formatPhoneNumber(initialNumber.replace(/\D/g, ""), country));
       setSearchTrigger(true);
     }
-  }, [initialNumber]);
+  }, [initialNumber, country]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRawInput(formatPhoneNumber(e.target.value));
+    setRawInput(formatPhoneNumber(e.target.value, country));
+    setSearchTrigger(false);
+  };
+
+  const handleCountryChange = (val: CountryCode) => {
+    setCountry(val);
+    setRawInput("");
     setSearchTrigger(false);
   };
 
@@ -131,6 +164,7 @@ export default function LookupPage({
   const riskInfo = getRiskLabel(spamRisk);
 
   const recentHistory = (history || []).slice(0, 5);
+  const countryOpt = COUNTRY_OPTIONS[country];
 
   return (
     <div className="min-h-screen bg-background">
@@ -158,14 +192,22 @@ export default function LookupPage({
               Phone Number
             </label>
             <div className="flex gap-2">
-              <div className="flex items-center gap-2 bg-muted rounded-lg px-3 text-muted-foreground text-sm font-medium border border-border">
-                <Phone className="w-4 h-4" />
-                +1
-              </div>
+              <Select
+                value={country}
+                onValueChange={(v) => handleCountryChange(v as CountryCode)}
+              >
+                <SelectTrigger className="w-[110px] shrink-0 font-medium">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="US">🇺🇸 +1</SelectItem>
+                  <SelectItem value="IN">🇮🇳 +91</SelectItem>
+                </SelectContent>
+              </Select>
               <Input
                 id="phone-input"
                 type="tel"
-                placeholder="(555) 000-0000"
+                placeholder={countryOpt.placeholder}
                 value={rawInput}
                 onChange={handleInput}
                 onKeyDown={(e) => e.key === "Enter" && handleLookup()}
@@ -236,7 +278,7 @@ export default function LookupPage({
                       {result.name || "Unknown Caller"}
                     </h2>
                     <p className="text-muted-foreground text-sm mt-0.5">
-                      {rawInput}
+                      {countryOpt.flag} {countryOpt.code} {rawInput}
                     </p>
                   </div>
                   <div
@@ -394,7 +436,7 @@ export default function LookupPage({
                       </div>
                       <div>
                         <div className="text-sm font-medium text-foreground">
-                          {formatPhoneNumber(entry.number)}
+                          {formatPhoneNumber(entry.number, country)}
                         </div>
                         <div className="text-xs text-muted-foreground capitalize">
                           {entry.action}
